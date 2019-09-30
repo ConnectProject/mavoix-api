@@ -30,6 +30,8 @@ app.use('/', parseServer)
 
 const server = http.createServer(app)
 
-server.listen(LISTEN_PORT)
+server.listen(LISTEN_PORT).on('listening', () => {
+	console.log(`Server listening on port ${LISTEN_PORT}`)
+})
 
 ParseServer.createLiveQueryServer(server)
