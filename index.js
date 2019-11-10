@@ -7,15 +7,13 @@ import { checkEnv } from './utils'
 if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
 	require('dotenv').config()
 }
-checkEnv()
-
 
 const LISTEN_PORT = process.env.LISTEN_PORT || process.env.PORT
 
 const app = express()
 
 const parseServer = new ParseServer({
-	databaseURI: process.env.DATABASE_URI,
+	databaseURI: process.env.MONGODB_ADDON_URI,
 	appId: process.env.APP_ID,
 	masterKey: process.env.MASTER_KEY,
 	javascriptKey: process.env.JAVASCRIPT_KEY,

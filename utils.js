@@ -5,8 +5,7 @@ function EnvError(name) {
 export function checkEnv() {
 	const env = process.env
 
-	console.log(env)
-	if (!env.DATABASE_URI)
+	if (!env.MONGODB_ADDON_URI)
 		throw EnvError('DATABASE_URI')
 	if (!env.APP_ID)
 		throw EnvError('APP_ID')
