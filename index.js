@@ -10,7 +10,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
 checkEnv()
 
 
-const LISTEN_PORT = process.env.LISTEN_PORT
+const LISTEN_PORT = process.env.LISTEN_PORT || process.env.PORT
 
 const app = express()
 
