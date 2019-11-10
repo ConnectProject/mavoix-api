@@ -5,7 +5,7 @@ function EnvError(name) {
 export function checkEnv() {
 	const env = process.env
 
-	if (!env.LISTEN_PORT)
+	if (!env.LISTEN_PORT && !env.PORT)
 		throw EnvError('LISTEN_PORT')
 	if (!env.DATABASE_URI)
 		throw EnvError('DATABASE_URI')
