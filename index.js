@@ -2,13 +2,11 @@ import express from 'express'
 import http from 'http'
 import { ParseServer } from 'parse-server'
 
-import { checkEnv } from './utils'
-
 if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
 	require('dotenv').config()
 }
 
-const LISTEN_PORT = process.env.LISTEN_PORT || process.env.PORT
+const LISTEN_PORT = process.env.PORT
 
 const app = express()
 
@@ -18,7 +16,7 @@ const parseServer = new ParseServer({
 	masterKey: process.env.MASTER_KEY,
 	javascriptKey: process.env.JAVASCRIPT_KEY,
 	fileKey: process.env.FILE_KEY,
-	serverURL: `http://localhost:${LISTEN_PORT}/`,
+	serverURL: `http://${process.env.HOST}:${LISTEN_PORT}`,
 	liveQuery: {
 		classNames: ['Tab', 'TabItem']
 	}
