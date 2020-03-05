@@ -19,7 +19,7 @@
   "homepage": "https://github.com/ConnectProject/mavoix-api#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "parse-server": "^3.10.0"
+    "parse-server": "^4.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.3",
