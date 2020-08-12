@@ -18,7 +18,7 @@ const parseServer = new ParseServer({
 	fileKey: process.env.FILE_KEY,
 	serverURL: `http://${process.env.HOST}:${LISTEN_PORT}`,
 	liveQuery: {
-		classNames: ['Tab', 'TabItem']
+		classNames: ['Tab', 'TabItem', 'Session']
 	}
 })
 
