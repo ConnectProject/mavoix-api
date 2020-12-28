@@ -7,6 +7,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
 }
 
 const LISTEN_PORT = process.env.PORT
+const PUBLIC_URL = process.env.PUBLIC_URL
 
 const app = express()
 
@@ -17,6 +18,7 @@ const parseServer = new ParseServer({
 	javascriptKey: process.env.JAVASCRIPT_KEY,
 	fileKey: process.env.FILE_KEY,
 	serverURL: `http://${process.env.HOST}:${LISTEN_PORT}`,
+	...(PUBLIC_URL && {publicServerURL: PUBLIC_URL}),
 	liveQuery: {
 		classNames: ['Tab', 'TabItem', 'Session']
 	}
