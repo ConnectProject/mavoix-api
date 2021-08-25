@@ -13,6 +13,7 @@ const app = express()
 
 const parseServer = new ParseServer({
 	databaseURI: process.env.MONGODB_ADDON_URI,
+	cloud: __dirname + '/cloud/main.js',
 	appId: process.env.APP_ID,
 	masterKey: process.env.MASTER_KEY,
 	javascriptKey: process.env.JAVASCRIPT_KEY,
