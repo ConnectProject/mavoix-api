@@ -19,10 +19,14 @@ const parseServer = new ParseServer({
 	javascriptKey: process.env.JAVASCRIPT_KEY,
 	fileKey: process.env.FILE_KEY,
 	serverURL: `http://${process.env.HOST}:${LISTEN_PORT}`,
-	...(PUBLIC_URL && {publicServerURL: PUBLIC_URL}),
+	...(PUBLIC_URL && { publicServerURL: PUBLIC_URL }),
 	liveQuery: {
-		classNames: ['Tab', 'TabItem', 'Session']
-	}
+		classNames: ['Tab', 'TabItem', 'Session', 'ConnectToken']
+	},
+	protectedFields: {
+		_User: { '*': ['email'] },
+		ConnectToken: { '*': ['refreshToken'] }
+	},
 })
 
 app.use('/', parseServer)

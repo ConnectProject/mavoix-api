@@ -25,7 +25,7 @@ Parse.Cloud.define('removeDevice', async req => {
   const device = await new Parse.Query(Parse.User)
     .equalTo('username', username)
     .equalTo('linkedAccount', getUserId(req))
-    .first()
+    .first({ useMasterKey: true })
   if (!device) throw 'device not found'
   await device.destroy({ useMasterKey: true })
   return 'device removed';
@@ -51,30 +51,27 @@ Parse.Cloud.define('linkWithConnect', async req => {
     headers: { Authorization: 'Bearer ' + tokenData.access_token },
   });
 
-  let connectToken = await new Parse.Query('ConnectToken')
+  let prevTokens = await new Parse.Query('ConnectToken')
     .equalTo('mavoixUserId', userId)
-    .first({ useMasterKey: true })
+    .find()
 
-  if (connectToken) {
-    connectToken.set({
-      mavoixUserId: userId,
-      connectUserId: userData.id,
-      refreshToken: tokenData.refresh_token
-    });
-  } else {
-    const ConnectToken = Parse.Object.extend(
-      'ConnectToken',
-    );
-    connectToken = new ConnectToken({
-      mavoixUserId: userId,
-      connectUserId: userData.id,
-      refreshToken: tokenData.refresh_token
-    });
+  if (prevTokens.length) {
+    await Parse.Object.destroyAll(prevTokens, { useMasterKey: true });
   }
+
+  const ConnectToken = Parse.Object.extend(
+    'ConnectToken',
+  );
+  const connectToken = new ConnectToken({
+    mavoixUserId: userId,
+    connectUserId: userData.id,
+    refreshToken: tokenData.refresh_token,
+    accessToken: tokenData.access_token
+  });
+
   await connectToken.save(null, {
     useMasterKey: true,
   });
-
   return {
     connectUserId: connectToken?.get('connectUserId'),
     accessToken: tokenData?.access_token
@@ -90,29 +87,40 @@ Parse.Cloud.define('getConnectToken', async req => {
     .first({ useMasterKey: true })
 
   if (connectToken) {
+    // test if token is still valid
     try {
-      tokenData = (await axios.post(
-        `${CONNECT_URL}/oauth/token`,
-        new url.URLSearchParams({
-          client_id: CONNECT_CLIENT_ID,
-          client_secret: CONNECT_CLIENT_SECRET,
-          grant_type: 'refresh_token',
-          refresh_token: connectToken.get('refreshToken'),
-        }),
-        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
-      )).data
-
-      connectToken.set({
-        refreshToken: tokenData.refresh_token
-      });
-      await connectToken.save(null, {
-        useMasterKey: true,
+      await axios.get(`${CONNECT_URL}/oauth/user`, {
+        headers: { Authorization: 'Bearer ' + connectToken.get('accessToken') },
       });
     } catch (err) {
-      // if refresh token is not valid
-      if (err.response.status === 400) {
-        await connectToken.destroy({ useMasterKey: true });
-      } else {
+      if (err.response.status !== 401) {
+        throw err
+      }
+      // access token is no longer valid, try refresh token
+      try {
+        tokenData = (await axios.post(
+          `${CONNECT_URL}/oauth/token`,
+          new url.URLSearchParams({
+            client_id: CONNECT_CLIENT_ID,
+            client_secret: CONNECT_CLIENT_SECRET,
+            grant_type: 'refresh_token',
+            refresh_token: connectToken.get('refreshToken'),
+          }),
+          { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+        )).data
+
+        connectToken.set({
+          refreshToken: tokenData.refresh_token,
+          accessToken: tokenData.access_token
+        });
+        await connectToken.save(null, {
+          useMasterKey: true,
+        });
+      } catch (err) {
+        // if refresh token is not valid
+        if (err.response.status === 400) {
+          await connectToken.destroy({ useMasterKey: true });
+        }
         throw err
       }
     }
@@ -127,12 +135,11 @@ Parse.Cloud.define('getConnectToken', async req => {
 Parse.Cloud.define('unlinkFromConnect', async req => {
   const userId = getUserId(req)
 
-  const connectToken = await new Parse.Query('ConnectToken')
+  const connectTokens = await new Parse.Query('ConnectToken')
     .equalTo('mavoixUserId', userId)
-    .first({ useMasterKey: true })
+    .find()
 
-  if (!connectToken) throw 'not connected to connect'
-
-  await connectToken.destroy({ useMasterKey: true });
+  if (connectTokens.length === 0) throw 'not connected to connect'
+  await Parse.Object.destroyAll(connectTokens, { useMasterKey: true });
   return 'disconnected from connect';
 });
