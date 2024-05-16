@@ -6,23 +6,24 @@ Parse.Cloud.beforeDelete(Parse.User, async (request) => {
   // remove all devices associated to user
   const devices = await new Parse.Query(Parse.User)
     .equalTo('linkedAccount', user.id)
-    .find()
+    .find();
 
   for (const device of devices) {
-    await device.destroy({ useMasterKey: true })
+    // eslint-disable-next-line no-await-in-loop
+    await device.destroy({ useMasterKey: true });
   }
 
   // Fetch the associated role based on user's ID
-  const roleName = user.get('linkedAccount') || user.id
+  const roleName = user.get('linkedAccount') || user.id;
   const userRole = await new Parse.Query(Parse.Role)
     .equalTo('name', roleName)
     .first({ useMasterKey: true });
 
   if (!userRole) {
-    return
+    return;
   }
   userRole.getUsers().remove(user);
-  if (roleName == user.id) {
-    await userRole.destroy({ useMasterKey: true })
+  if (roleName === user.id) {
+    await userRole.destroy({ useMasterKey: true });
   }
-})
+});
