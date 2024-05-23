@@ -15,7 +15,7 @@ Parse.Cloud.define('resetDevice', async (req) => {
   const device = await new Parse.Query(Parse.User)
     .equalTo('username', username)
     .equalTo('linkedAccount', getUserId(req))
-    .first();
+    .first({ useMasterKey: true });
   if (!device) { throw new Error('device not found'); }
   device.setPassword(password);
   await device.save(null, { useMasterKey: true });
@@ -57,7 +57,7 @@ Parse.Cloud.define('linkWithConnect', async (req) => {
 
   const prevTokens = await new Parse.Query('ConnectToken')
     .equalTo('mavoixUserId', userId)
-    .find();
+    .find({ useMasterKey: true });
 
   if (prevTokens.length) {
     await Parse.Object.destroyAll(prevTokens, { useMasterKey: true });
@@ -143,7 +143,7 @@ Parse.Cloud.define('unlinkFromConnect', async (req) => {
 
   const connectTokens = await new Parse.Query('ConnectToken')
     .equalTo('mavoixUserId', userId)
-    .find();
+    .find({ useMasterKey: true });
 
   if (connectTokens.length === 0) { throw new Error('not connected to connect'); }
   await Parse.Object.destroyAll(connectTokens, { useMasterKey: true });

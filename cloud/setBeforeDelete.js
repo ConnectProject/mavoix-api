@@ -6,7 +6,7 @@ Parse.Cloud.beforeDelete(Parse.User, async (request) => {
   // remove all devices associated to user
   const devices = await new Parse.Query(Parse.User)
     .equalTo('linkedAccount', user.id)
-    .find();
+    .find({ useMasterKey: true });
 
   for (const device of devices) {
     // eslint-disable-next-line no-await-in-loop
