@@ -19,16 +19,16 @@
   },
   "homepage": "https://github.com/ConnectProject/mavoix-api#readme",
   "dependencies": {
-    "axios": "^1.6.8",
-    "express": "^4.17.1",
-    "parse-server": "^6.5.6"
+    "axios": "^1.7.8",
+    "express": "^4.21.1",
+    "parse-server": "^7.3.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.3",
-    "@babel/node": "^7.10.3",
-    "@babel/preset-env": "^7.10.3",
-    "dotenv": "^8.2.0",
-    "eslint": "^8.57.0",
+    "@babel/core": "^7.26.0",
+    "@babel/node": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "dotenv": "^16.4.6",
+    "eslint": "^9.16.0",
     "eslint-config-naat": "github:neuroanatomy/eslint-config-naat"
   }
 }
