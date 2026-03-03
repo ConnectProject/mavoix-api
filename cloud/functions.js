@@ -134,7 +134,7 @@ Parse.Cloud.define('getConnectToken', async (req) => {
 
   return {
     connectUserId: connectToken?.get('connectUserId'),
-    accessToken: tokenData?.access_token
+    accessToken: connectToken?.get('accessToken')
   };
 });
 
