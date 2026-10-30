@@ -58,3 +58,35 @@ classes.forEach((className) => {
     object.setACL(acl);
   });
 });
+
+// Usage recorded by the app (read by the panel's "Statistiques" page).
+// A device (DeviceUser) writes on behalf of the caregiver account it is linked to, so the owner is
+// `linkedAccount || id`; both accounts belong to the role named after the owner (see setAfterSave.js).
+const usageClasses = ['UsageSession', 'UsagePhrase'];
+
+usageClasses.forEach((className) => {
+  Parse.Cloud.beforeSave(className, (request) => {
+    if (request.master) {
+      return;
+    }
+    const { object, user } = request;
+
+    if (!user) {
+      throw new Parse.Error(401, 'No user authenticated');
+    }
+    const ownerId = user.get('linkedAccount') || user.id;
+    const userField = object.get('user');
+    if (userField && userField !== ownerId) {
+      throw new Parse.Error(Parse.Error.VALIDATION_ERROR, 'Wrong user id');
+    }
+    object.set('user', ownerId);
+    // the writing account, set here so that it cannot be forged
+    object.set('device', user.id);
+
+    // Only the owner account and its devices can read and write
+    const acl = new Parse.ACL();
+    acl.setRoleReadAccess(ownerId, true);
+    acl.setRoleWriteAccess(ownerId, true);
+    object.setACL(acl);
+  });
+});
