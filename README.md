@@ -12,3 +12,10 @@
 
 ## Running
 > `npm start`
+
+## Admin UI (Parse Dashboard)
+This API has no admin UI of its own; Parse Dashboard is installed as a dev dependency. With the API running:
+
+> `npm run dashboard`
+
+Then open http://127.0.0.1:4040. The script uses `appId` `mavoix-api` and master key `masterKey`; if your `.env` has other values, edit the `dashboard` script in `package.json`. The dashboard uses the master key, so keep it bound to localhost.

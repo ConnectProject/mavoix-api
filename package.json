@@ -5,7 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "babel-node ."
+    "start": "babel-node .",
+    "dashboard": "parse-dashboard --appId mavoix-api --masterKey masterKey --serverURL http://localhost:8080 --appName MaVoix --host 127.0.0.1 --port 4040 --allowInsecureHTTP"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
     "@babel/preset-env": "^7.10.3",
     "dotenv": "^8.2.0",
     "eslint": "^8.57.0",
-    "eslint-config-naat": "github:neuroanatomy/eslint-config-naat"
+    "eslint-config-naat": "github:neuroanatomy/eslint-config-naat",
+    "parse-dashboard": "^5.4.0"
   }
 }
